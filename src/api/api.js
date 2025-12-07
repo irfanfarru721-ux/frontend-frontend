@@ -14,8 +14,8 @@ axiosInstance.interceptors.request.use((config) => {
 });
 
 // AUTH
-export const registerUser = (data) => axiosInstance.post("/auth/register", data);
-export const loginUser = (data) => axiosInstance.post("/auth/login", data);
+export const registerUser = (data) => axiosInstance.post("/users/register", data);
+export const loginUser = (data) => axiosInstance.post("/users/login", data);
 
 // MODULES
 export const getModules = () => axiosInstance.get("/modules");
