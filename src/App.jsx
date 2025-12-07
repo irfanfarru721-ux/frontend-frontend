@@ -12,6 +12,7 @@ import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import CategoryProductsPage from "./pages/CategoryProductsPage";
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/vendors/:moduleId" element={<VendorsPage />} />
         <Route path="/products/:vendorId" element={<ProductsPage />} />
         <Route path="/product/:id" element={<ProductDetails />} />
+        <Route path="/category/:categoryId" element={<CategoryProductsPage />} />
 
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
