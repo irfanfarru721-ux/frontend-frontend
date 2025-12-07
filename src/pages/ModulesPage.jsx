@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import API from "../api/adminApi";
+import API from "../api/Api";
 
 export default function Modules() {
   const [modules, setModules] = useState([]);
