@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { loginUser, registerUser } from "..api/api"; // your axios file
+import { loginUser, registerUser } from "../api/api"; // your axios file
 
 const AuthContext = createContext();
 
