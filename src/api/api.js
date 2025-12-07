@@ -30,7 +30,7 @@ export const getProductsByVendor = (vendorId) =>
 export const getProduct = (id) => axiosInstance.get(`/products/${id}`);
 export const getAllProducts = () => axiosInstance.get("/products");
 
-// CATEGORIES (optional)
+// CATEGORIES 
 export const getCategoriesByVendor = (vendorId) =>
   axiosInstance.get(`/categories/vendor/${vendorId}`);
 
