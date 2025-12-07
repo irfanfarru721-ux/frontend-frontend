@@ -1,42 +1,43 @@
-import { createContext, useContext, useState } from "react";
-import { loginUser, registerUser } from "../api/api"; // your axios file
+import React, { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
-const AuthContext = createContext();
+function Login() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-
-  const login = async (email, password) => {
-    try {
-      const { data } = await loginUser({ email, password });  // <-- FIXED
-
-      localStorage.setItem("token", data.token);
-      setUser(data.user);
-
-      return { success: true };
-    } catch (err) {
-      return { success: false, error: err.response?.data?.message || "Login failed" };
-    }
-  };
-
-  const register = async (name, email, password) => {
-    try {
-      const { data } = await registerUser({ name, email, password });
-
-      localStorage.setItem("token", data.token);
-      setUser(data.user);
-
-      return { success: true };
-    } catch (err) {
-      return { success: false, error: err.response?.data?.message || "Register failed" };
-    }
+  const submit = async (e) => {
+    e.preventDefault();
+    const res = await login(email, password);
+    if (res.success) navigate("/");
+    else alert(res.error);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register }}>
-      {children}
-    </AuthContext.Provider>
+    <div style={{ padding: 20, maxWidth: 480 }}>
+      <h2>Login</h2>
+      <form onSubmit={submit}>
+        <input
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={{ display: "block", width: "100%", padding: 8, marginBottom: 8 }}
+        />
+        <input
+          placeholder="Password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={{ display: "block", width: "100%", padding: 8, marginBottom: 8 }}
+        />
+        <button type="submit" style={{ padding: "8px 12px", background: "#0369a1", color: "#fff" }}>
+          Login
+        </button>
+      </form>
+    </div>
   );
 }
 
-export const useAuth = () => useContext(AuthContext);
+export default Login; // ✅ Important!
