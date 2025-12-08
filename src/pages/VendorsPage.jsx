@@ -1,76 +1,41 @@
-// src/pages/VendorsPage.jsx
-import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { getVendorsByModule } from "../api/api";
+// src/pages/VendorProductsPage.jsx
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { getVendorProductsGrouped } from "../api/api";
 
-const VendorsPage = () => {
-  const { moduleId } = useParams(); // moduleId from route
-  const [vendors, setVendors] = useState([]);
+export default function VendorProductsPage(){
+  const { vendorId } = useParams();
+  const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (!moduleId) return;
-
+  useEffect(()=> {
+    if(!vendorId) return;
     setLoading(true);
-    setError("");
+    getVendorProductsGrouped(vendorId)
+      .then(res => { setGroups(res.data || []); setLoading(false); })
+      .catch(err => { console.error(err); setLoading(false); });
+  }, [vendorId]);
 
-    getVendorsByModule(moduleId)
-      .then((res) => {
-        setVendors(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("Failed to load vendors.");
-        setLoading(false);
-      });
-  }, [moduleId]);
-
-  if (loading) return <p>Loading vendors...</p>;
-  if (error) return <p>{error}</p>;
-  if (vendors.length === 0) return <p>No vendors found for this module.</p>;
+  if(loading) return <p>Loading...</p>;
 
   return (
-    <div style={{ padding: "1rem" }}>
-      <h1>Vendors</h1>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-          gap: "1rem",
-        }}
-      >
-        {vendors.map((vendor) => (
-          <div
-            key={vendor._id}
-            style={{
-              border: "1px solid #ccc",
-              padding: "1rem",
-              borderRadius: "8px",
-            }}
-          >
-            <h3>{vendor.name}</h3>
-            <p>{vendor.description || "No description"}</p>
-            <Link
-              to={`/products/${vendor._id}`}
-              style={{
-                display: "inline-block",
-                marginTop: "0.5rem",
-                padding: "0.5rem 1rem",
-                background: "#007bff",
-                color: "#fff",
-                borderRadius: "5px",
-                textDecoration: "none",
-              }}
-            >
-              View Products
-            </Link>
-          </div>
-        ))}
-      </div>
+    <div style={{ padding: 16 }}>
+      <h2>Vendor Products</h2>
+      {groups.length === 0 ? <p>No products for this vendor</p> : (
+        groups.map(g => (
+          <section key={g.category._id} style={{ marginBottom: 20 }}>
+            <h3>{g.category.name}</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}>
+              {g.products.map(p => (
+                <div key={p._id} style={{ border: "1px solid #ddd", padding: 12 }}>
+                  <h4>{p.name}</h4>
+                  <p>Price: ₹{p.price}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        ))
+      )}
     </div>
   );
-};
-
-export default VendorsPage;
+}
