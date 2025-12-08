@@ -1,27 +1,41 @@
-import { useEffect, useState, useContext } from "react";
+// src/pages/CategoryProductsPage.jsx
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getProductsByCategory } from "../api/api";
+import { getProductsByVendorAndCategory } from "../api/api";
 import { CartContext } from "../context/CartContext";
+import { useContext } from "react";
 
-export default function CategoryProductsPage() {
-  const { categoryId } = useParams();
+const CategoryProductsPage = () => {
+  const { vendorId, categoryId } = useParams(); // expecting both vendorId and categoryId in URL
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const { addToCart } = useContext(CartContext);
 
   useEffect(() => {
-    if (!categoryId) return;
+    if (!vendorId || !categoryId) return;
 
-    getProductsByCategory(categoryId)
+    setLoading(true);
+    setError("");
+
+    getProductsByVendorAndCategory(vendorId, categoryId)
       .then((res) => {
-        console.log("Fetched Products:", res.data); // Debug
         setProducts(res.data);
+        setLoading(false);
       })
-      .catch((err) => console.error("API Error:", err));
-  }, [categoryId]);
+      .catch((err) => {
+        console.error(err);
+        setError("Failed to load products.");
+        setLoading(false);
+      });
+  }, [vendorId, categoryId]);
+
+  if (loading) return <p>Loading products...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Category Products</h2>
+    <div style={{ padding: "1rem" }}>
+      <h1>Products</h1>
 
       {products.length === 0 ? (
         <p>No products found in this category.</p>
@@ -29,32 +43,39 @@ export default function CategoryProductsPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))",
-            gap: 12,
+            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+            gap: "1rem",
           }}
         >
           {products.map((p) => (
             <div
               key={p._id}
               style={{
-                border: "1px solid #ddd",
-                padding: 12,
-                borderRadius: 8,
+                border: "1px solid #ccc",
+                padding: "1rem",
+                borderRadius: "8px",
               }}
             >
-              <div style={{ fontWeight: 700 }}>{p.name}</div>
-              <div>Vendor: {p.vendorId?.name}</div>
-              <div>Category: {p.categoryId?.name}</div>
-              <div>Price: ₹{p.price}</div>
+              <h3>{p.name}</h3>
+              <p>Price: ₹{p.price}</p>
+              <p>Vendor: {p.vendorId.name}</p>
+              {p.image && (
+                <img
+                  src={p.image}
+                  alt={p.name}
+                  style={{ width: "100%", borderRadius: "5px" }}
+                />
+              )}
               <button
                 onClick={() => addToCart(p)}
                 style={{
-                  marginTop: 8,
-                  padding: "8px 10px",
-                  background: "#0369a1",
-                  color: "white",
+                  marginTop: "0.5rem",
+                  padding: "0.5rem 1rem",
+                  backgroundColor: "#007bff",
+                  color: "#fff",
                   border: "none",
-                  borderRadius: 6,
+                  borderRadius: "5px",
+                  cursor: "pointer",
                 }}
               >
                 Add to Cart
@@ -63,9 +84,8 @@ export default function CategoryProductsPage() {
           ))}
         </div>
       )}
-
-      {/* Debug raw JSON for mobile */}
-      <pre style={{ marginTop: 20 }}>{JSON.stringify(products, null, 2)}</pre>
     </div>
   );
-}
+};
+
+export default CategoryProductsPage;
