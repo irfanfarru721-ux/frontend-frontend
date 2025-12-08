@@ -7,6 +7,7 @@ const axiosInstance = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+// Add token if available
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) config.headers.Authorization = `Bearer ${token}`;
@@ -30,11 +31,15 @@ export const getProductsByVendor = (vendorId) =>
 export const getProduct = (id) => axiosInstance.get(`/products/${id}`);
 export const getAllProducts = () => axiosInstance.get("/products");
 
-// CATEGORIES 
+// ✅ CATEGORY-WISE PRODUCTS
+export const getProductsByCategory = (categoryId) =>
+  axiosInstance.get(`/products/category/${categoryId}`);
+
+// CATEGORIES
 export const getCategoriesByVendor = (vendorId) =>
   axiosInstance.get(`/categories/vendor/${vendorId}`);
 
-// ORDERS (placeholder)
+// ORDERS
 export const createOrder = (data) => axiosInstance.post("/orders", data);
 export const getMyOrders = () => axiosInstance.get("/orders/me");
 
