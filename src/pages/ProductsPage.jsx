@@ -1,31 +1,27 @@
+// src/pages/ProductsPage.jsx
+
 import { useEffect, useState, useContext } from "react";
 import { getAllProducts } from "../api/api";
 import { CartContext } from "../context/CartContext";
 
-const ProductsPage = () => {
+export default function ProductsPage() {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
   const { addToCart } = useContext(CartContext);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-
     getAllProducts()
       .then((res) => {
         setProducts(res.data);
         setLoading(false);
       })
       .catch((err) => {
-        console.error(err);
-        setError("Failed to load products.");
+        console.error("Error fetching products:", err);
         setLoading(false);
       });
   }, []);
 
-  if (loading) return <p style={{ padding: "1rem" }}>Loading products...</p>;
-  if (error) return <p style={{ padding: "1rem" }}>{error}</p>;
+  if (loading) return <p style={{ padding: "1rem" }}>Loading...</p>;
 
   return (
     <div style={{ padding: "1rem" }}>
@@ -37,7 +33,7 @@ const ProductsPage = () => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
             gap: "1rem",
             marginTop: "1rem",
           }}
@@ -49,28 +45,37 @@ const ProductsPage = () => {
                 border: "1px solid #ccc",
                 padding: "1rem",
                 borderRadius: "8px",
+                background: "#fafafa",
               }}
             >
-              <h3>{p.name}</h3>
-              <p>Price: ₹{p.price}</p>
-              <p>Vendor: {p.vendorId?.name || "N/A"}</p>
-              <p>Category: {p.categoryId?.name || "N/A"}</p>
-
               {p.image && (
                 <img
                   src={p.image}
                   alt={p.name}
-                  style={{ width: "100%", borderRadius: "5px" }}
+                  style={{ width: "100%", borderRadius: "8px" }}
                 />
+              )}
+              <h3>{p.name}</h3>
+              <p>Price: ₹{p.price}</p>
+              {p.categoryId && (
+                <p>
+                  Category: <strong>{p.categoryId.name}</strong>
+                </p>
+              )}
+              {p.vendorId && (
+                <p>
+                  Vendor: <strong>{p.vendorId.name}</strong>
+                </p>
               )}
 
               <button
                 onClick={() => addToCart(p)}
                 style={{
                   marginTop: "0.5rem",
-                  padding: "0.5rem 1rem",
+                  width: "100%",
+                  padding: "0.6rem",
                   backgroundColor: "#007bff",
-                  color: "#fff",
+                  color: "white",
                   border: "none",
                   borderRadius: "5px",
                   cursor: "pointer",
@@ -84,6 +89,4 @@ const ProductsPage = () => {
       )}
     </div>
   );
-};
-
-export default ProductsPage;
+}
