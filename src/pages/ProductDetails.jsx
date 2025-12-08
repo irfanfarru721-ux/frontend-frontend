@@ -9,6 +9,7 @@ export default function ProductDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Page-local API helper
   const getProduct = async (id) => {
     const res = await fetch(`/api/products/${id}`);
     if (!res.ok) throw new Error("Failed to fetch product");
@@ -37,6 +38,7 @@ export default function ProductDetails() {
     <div style={{ padding: 16 }}>
       <h2>{product.name}</h2>
       <p>Price: ₹{product.price}</p>
+      <p>{product.description}</p>
       <button onClick={() => addToCart(product)}>Add to Cart</button>
     </div>
   );
