@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
+import { createOrder } from "../api/api";
 
 export default function CheckoutPage() {
   const { cartItems, clearCart } = useContext(CartContext);
@@ -8,18 +9,8 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Page-local API helper
-  const createOrder = async (orderData) => {
-    const res = await fetch("/api/orders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(orderData),
-    });
-    if (!res.ok) throw new Error("Failed to create order");
-    return res.json();
-  };
-
   const handleCheckout = async () => {
+    if (cartItems.length === 0) return;
     setLoading(true);
     try {
       const order = await createOrder({ items: cartItems });
