@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "../api/api";
+import axiosInstance from "../api/api.js";
 
 export default function CategoryProducts() {
   const { categoryId } = useParams();
@@ -9,8 +9,8 @@ export default function CategoryProducts() {
   useEffect(() => {
     if (!categoryId) return;
 
-    axios
-      .get(`/api/products/category/${categoryId}`)
+    axiosInstance
+      .get(`/products/category/${categoryId}`)  // ✅ no /api here
       .then((res) => setProducts(res.data))
       .catch((err) => console.log(err));
   }, [categoryId]);
