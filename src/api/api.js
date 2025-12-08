@@ -11,11 +11,16 @@ export const getAllProducts = async () => {
   return res.json();
 };
 
-// Get product by ID
-export const getProductById = async (id) => {
-  const res = await fetch(`${BASE_URL}/products/${id}`);
-  if (!res.ok) throw new Error("Failed to fetch product");
-  return res.json();
+// Get single product by ID
+export const getProduct = async (id) => {
+  try {
+    const res = await fetch(`${BASE_URL}/products/${id}`);
+    if (!res.ok) throw new Error("Failed to fetch product");
+    return res.json();
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 };
 
 // Get products by category
