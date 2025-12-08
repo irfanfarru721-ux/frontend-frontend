@@ -1,39 +1,26 @@
-import { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { getProduct } from "../api/api";
 import { useParams } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
-import { getProduct } from "../api/api";
 
-export default function ProductDetails() {
+export default function ProductDetails(){
   const { id } = useParams();
-  const { addToCart } = useContext(CartContext);
   const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { addToCart } = useContext(CartContext);
 
   useEffect(() => {
     if (!id) return;
-    getProduct(id)
-      .then((data) => {
-        setProduct(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError(err.message);
-        setLoading(false);
-      });
+    getProduct(id).then(r=>setProduct(r.data));
   }, [id]);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
-  if (!product) return <p>Product not found</p>;
+  if (!product) return <div style={{padding:20}}>Loading...</div>;
 
   return (
-    <div style={{ padding: 16 }}>
+    <div style={{padding:20}}>
       <h2>{product.name}</h2>
-      <p>Price: ₹{product.price}</p>
+      <p>₹ {product.price}</p>
       <p>{product.description}</p>
-      <button onClick={() => addToCart(product)}>Add to Cart</button>
+      <button onClick={()=>addToCart(product)} style={{padding:'8px 12px', background:'#0369a1', color:'#fff'}}>Add to cart</button>
     </div>
   );
 }

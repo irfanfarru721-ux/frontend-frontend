@@ -1,42 +1,20 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { getModules } from "../api/api";
+import { Link } from "react-router-dom";
 
 export default function ModulesPage() {
   const [modules, setModules] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    getModules()
-      .then((data) => {
-        setModules(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
-
+  useEffect(() => { getModules().then((r)=>setModules(r.data || [])); }, []);
   return (
-    <div style={{ padding: 16 }}>
+    <div style={{padding:20}}>
       <h2>Modules</h2>
-      {modules.length === 0 ? (
-        <p>No modules found</p>
-      ) : (
-        <ul>
-          {modules.map((m) => (
-            <li key={m._id}>
-              <Link to={`/modules/${m._id}`}>{m.name}</Link>
-            </li>
-          ))}
-        </ul>
-      )}
+      <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:12}}>
+        {modules.map(m => (
+          <Link key={m._id} to={`/vendors/${m._id}`} style={{ padding:12, border:'1px solid #ddd', borderRadius:8, textDecoration:'none', color:'#111' }}>
+            {m.name}
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,37 +1,35 @@
-import { useState, useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 import { createOrder } from "../api/api";
 
-export default function CheckoutPage() {
-  const { cartItems, clearCart } = useContext(CartContext);
+export default function CheckoutPage(){
+  const { cart, clearCart } = useContext(CartContext);
+  const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
-  const handleCheckout = async () => {
-    if (cartItems.length === 0) return;
-    setLoading(true);
+  const handlePlaceOrder = async () => {
+    if (!address) return alert("Enter address");
+    const items = cart.map(i => ({ productId: i.productId, qty: i.qty }));
     try {
-      const order = await createOrder({ items: cartItems });
+      await createOrder({ items, shippingAddress: address, phone });
       clearCart();
-      navigate(`/order/${order._id}`);
+      alert("Order placed");
+      navigate("/");
     } catch (err) {
-      console.error(err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      alert("Order failed");
     }
   };
 
   return (
-    <div style={{ padding: 16 }}>
+    <div style={{padding:20}}>
       <h2>Checkout</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <button onClick={handleCheckout} disabled={loading || cartItems.length === 0}>
-        {loading ? "Processing..." : "Place Order"}
-      </button>
-      {cartItems.length === 0 && <p>Your cart is empty.</p>}
+      <div>
+        <input placeholder="Shipping address" value={address} onChange={e=>setAddress(e.target.value)} style={{display:'block', width:'100%', padding:8, marginBottom:8}}/>
+        <input placeholder="Phone" value={phone} onChange={e=>setPhone(e.target.value)} style={{display:'block', width:'100%', padding:8, marginBottom:8}}/>
+        <button onClick={handlePlaceOrder} style={{padding:'8px 12px', background:'#0369a1', color:'#fff'}}>Place Order</button>
+      </div>
     </div>
   );
 }

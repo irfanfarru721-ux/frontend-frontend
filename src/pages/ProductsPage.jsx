@@ -1,92 +1,127 @@
 // src/pages/ProductsPage.jsx
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import {
+  getProductsByVendor,
+  getCategoriesByVendor,
+} from "../api/api";
 
-import { useEffect, useState, useContext } from "react";
-import { getAllProducts } from "../api/api";
-import { CartContext } from "../context/CartContext";
-
-export default function ProductsPage() {
+const ProductsPage = () => {
+  const { vendorId } = useParams(); // vendorId from route
   const [products, setProducts] = useState([]);
-  const { addToCart } = useContext(CartContext);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
+  // Fetch vendor products and categories
   useEffect(() => {
-    getAllProducts()
+    if (!vendorId) return;
+
+    setLoading(true);
+    setError("");
+
+    // Fetch products
+    getProductsByVendor(vendorId)
       .then((res) => {
         setProducts(res.data);
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Error fetching products:", err);
+        console.error(err);
+        setError("Failed to load products.");
         setLoading(false);
       });
-  }, []);
 
-  if (loading) return <p style={{ padding: "1rem" }}>Loading...</p>;
+    // Fetch categories for vendor
+    getCategoriesByVendor(vendorId)
+      .then((res) => setCategories(res.data))
+      .catch((err) => console.error(err));
+  }, [vendorId]);
+
+  // Filter products by selected category
+  const filteredProducts = selectedCategory
+    ? products.filter((p) => p.categoryId._id === selectedCategory)
+    : products;
+
+  if (loading) return <p>Loading products...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <div style={{ padding: "1rem" }}>
-      <h1>All Products</h1>
+      <h1>Products</h1>
 
-      {products.length === 0 ? (
-        <p>No products found.</p>
+      {/* Category Filter */}
+      <div style={{ marginBottom: "1rem" }}>
+        <button
+          onClick={() => setSelectedCategory("")}
+          style={{
+            marginRight: "0.5rem",
+            padding: "0.5rem 1rem",
+            background: !selectedCategory ? "#007bff" : "#ccc",
+            color: "#fff",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+        >
+          All
+        </button>
+        {categories.map((cat) => (
+          <button
+            key={cat._id}
+            onClick={() => setSelectedCategory(cat._id)}
+            style={{
+              marginRight: "0.5rem",
+              padding: "0.5rem 1rem",
+              background: selectedCategory === cat._id ? "#007bff" : "#ccc",
+              color: "#fff",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            {cat.name}
+          </button>
+        ))}
+      </div>
+
+      {/* Products Grid */}
+      {filteredProducts.length === 0 ? (
+        <p>No products in this category.</p>
       ) : (
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
             gap: "1rem",
-            marginTop: "1rem",
           }}
         >
-          {products.map((p) => (
+          {filteredProducts.map((p) => (
             <div
               key={p._id}
               style={{
                 border: "1px solid #ccc",
                 padding: "1rem",
                 borderRadius: "8px",
-                background: "#fafafa",
               }}
             >
+              <h3>{p.name}</h3>
+              <p>Price: ₹{p.price}</p>
+              <p>Vendor: {p.vendorId.name}</p>
               {p.image && (
                 <img
                   src={p.image}
                   alt={p.name}
-                  style={{ width: "100%", borderRadius: "8px" }}
+                  style={{ width: "100%", borderRadius: "5px" }}
                 />
               )}
-              <h3>{p.name}</h3>
-              <p>Price: ₹{p.price}</p>
-              {p.categoryId && (
-                <p>
-                  Category: <strong>{p.categoryId.name}</strong>
-                </p>
-              )}
-              {p.vendorId && (
-                <p>
-                  Vendor: <strong>{p.vendorId.name}</strong>
-                </p>
-              )}
-
-              <button
-                onClick={() => addToCart(p)}
-                style={{
-                  marginTop: "0.5rem",
-                  width: "100%",
-                  padding: "0.6rem",
-                  backgroundColor: "#007bff",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-              >
-                Add to Cart
-              </button>
             </div>
           ))}
         </div>
       )}
     </div>
   );
-}
+};
+
+export default ProductsPage;
