@@ -1,3 +1,4 @@
+// src/api/api.js
 import axios from "axios";
 
 // Base URL for backend
@@ -24,80 +25,59 @@ export const loginUser = (data) => axiosInstance.post("/users/login", data);
 export const getModules = () => axiosInstance.get("/modules");
 
 // ================== VENDORS ==================
-export const getVendorsByModule = (moduleId) =>
-  axiosInstance.get(`/vendors/module/${moduleId}`);
+export const getVendors = () => axiosInstance.get("/vendors");
+export const getVendor = (id) => axiosInstance.get(`/vendors/${id}`);
+export const createVendor = (data) => axiosInstance.post("/vendors", data);
+export const updateVendor = (id, data) => axiosInstance.put(`/vendors/${id}`, data);
+export const deleteVendor = (id) => axiosInstance.delete(`/vendors/${id}`);
+
+// ================== PRODUCTS ==================
+export const getProducts = () => axiosInstance.get("/products");
+export const getProduct = (id) => axiosInstance.get(`/products/${id}`);
+export const createProduct = (data) => axiosInstance.post("/products", data);
+export const updateProduct = (id, data) => axiosInstance.put(`/products/${id}`, data);
+export const deleteProduct = (id) => axiosInstance.delete(`/products/${id}`);
+export const filterProducts = (params) => axiosInstance.get("/products", { params });
+
+// **Category / Vendor specific**
+export const getProductsByCategory = (catId) =>
+  axiosInstance.get(`/products/category/${catId}`);
+export const getProductsByVendor = (vendorId) =>
+  axiosInstance.get(`/products/vendor/${vendorId}`);
 
 // ================== CATEGORIES ==================
+export const getCategories = () => axiosInstance.get("/categories");
+export const getCategory = (id) => axiosInstance.get(`/categories/${id}`);
+export const createCategory = (data) => axiosInstance.post("/categories", data);
+export const updateCategory = (id, data) => axiosInstance.put(`/categories/${id}`, data);
+export const deleteCategory = (id) => axiosInstance.delete(`/categories/${id}`);
 export const getCategoriesByVendor = (vendorId) =>
   axiosInstance.get(`/categories/vendor/${vendorId}`);
-/* ===========================
-      PRODUCTS
-=========================== */
-export const getProducts = () => API.get("/products");
-export const getProduct = (id) => API.get(`/products/${id}`);
-export const createProduct = (data) => API.post("/products", data);
-export const updateProduct = (id, data) => API.put(`/products/${id}`, data);
-export const deleteProduct = (id) => API.delete(`/products/${id}`);
 
-// FILTER PRODUCTS
-export const filterProducts = (params) => {
-  // params example: { category: "Mobiles", minPrice: 100, maxPrice: 5000 }
-  return API.get("/products", { params });
-};
+// ================== ORDERS ==================
+export const createOrder = (data) => axiosInstance.post("/orders", data);
+export const getOrders = () => axiosInstance.get("/orders");
+export const getOrder = (id) => axiosInstance.get(`/orders/${id}`);
+export const updateOrder = (id, data) => axiosInstance.put(`/orders/${id}`, data);
+export const deleteOrder = (id) => axiosInstance.delete(`/orders/${id}`);
 
-/* ===========================
-      CATEGORIES
-=========================== */
-export const getCategories = () => API.get("/categories");
-export const getCategory = (id) => API.get(`/categories/${id}`);
-export const createCategory = (data) => API.post("/categories", data);
-export const updateCategory = (id, data) => API.put(`/categories/${id}`, data);
-export const deleteCategory = (id) => API.delete(`/categories/${id}`);
-export const getProductsByCategory = (catId) =>
-  API.get(`/products/category/${catId}`);
+// ================== CART ==================
+export const getCart = () => axiosInstance.get("/cart");
+export const addToCart = (data) => axiosInstance.post("/cart", data);
+export const updateCartItem = (id, data) => axiosInstance.put(`/cart/${id}`, data);
+export const removeCartItem = (id) => axiosInstance.delete(`/cart/${id}`);
+export const clearCart = () => axiosInstance.delete("/cart/clear");
 
-/* ===========================
-      ORDERS
-=========================== */
-export const createOrder = (data) => API.post("/orders", data);
-export const getOrders = () => API.get("/orders");
-export const getOrder = (id) => API.get(`/orders/${id}`);
-export const updateOrder = (id, data) => API.put(`/orders/${id}`, data);
-export const deleteOrder = (id) => API.delete(`/orders/${id}`);
+// ================== REVIEWS ==================
+export const getReviews = (productId) => axiosInstance.get(`/reviews/${productId}`);
+export const addReview = (productId, data) => axiosInstance.post(`/reviews/${productId}`, data);
+export const deleteReview = (reviewId) => axiosInstance.delete(`/reviews/${reviewId}`);
 
-/* ===========================
-      CART
-=========================== */
-export const getCart = () => API.get("/cart");
-export const addToCart = (data) => API.post("/cart", data);
-export const updateCartItem = (id, data) => API.put(`/cart/${id}`, data);
-export const removeCartItem = (id) => API.delete(`/cart/${id}`);
-export const clearCart = () => API.delete("/cart/clear");
+// ================== SERVICES (OPTIONAL) ==================
+export const getServices = () => axiosInstance.get("/services");
+export const getService = (id) => axiosInstance.get(`/services/${id}`);
+export const createService = (data) => axiosInstance.post("/services", data);
+export const updateService = (id, data) => axiosInstance.put(`/services/${id}`, data);
+export const deleteService = (id) => axiosInstance.delete(`/services/${id}`);
 
-/* ===========================
-      REVIEWS
-=========================== */
-export const getReviews = (productId) => API.get(`/reviews/${productId}`);
-export const addReview = (productId, data) =>
-  API.post(`/reviews/${productId}`, data);
-export const deleteReview = (reviewId) => API.delete(`/reviews/${reviewId}`);
-
-/* ===========================
-      VENDORS
-=========================== */
-export const getVendors = () => API.get("/vendors");
-export const getVendor = (id) => API.get(`/vendors/${id}`);
-export const createVendor = (data) => API.post("/vendors", data);
-export const updateVendor = (id, data) => API.put(`/vendors/${id}`, data);
-export const deleteVendor = (id) => API.delete(`/vendors/${id}`);
-
-/* ===========================
-      SERVICES (OPTIONAL)
-=========================== */
-export const getServices = () => API.get("/services");
-export const getService = (id) => API.get(`/services/${id}`);
-export const createService = (data) => API.post("/services", data);
-export const updateService = (id, data) => API.put(`/services/${id}`, data);
-export const deleteService = (id) => API.delete(`/services/${id}`);
-
-export default API;
+export default axiosInstance;
