@@ -54,6 +54,20 @@ export const getAllCategories = async () => {
   return res.json();
 };
 
+// -------------------- MODULES --------------------
+
+// Get all modules
+export const getModules = async () => {
+  try {
+    const res = await fetch(`${BASE_URL}/modules`);
+    if (!res.ok) throw new Error("Failed to fetch modules");
+    return res.json();
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 // -------------------- USERS --------------------
 
 // Login
