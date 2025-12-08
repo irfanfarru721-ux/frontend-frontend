@@ -1,37 +1,43 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import VendorProductsPage from "./pages/VendorProductsPage";
-import ProductDetails from "./pages/ProductDetails";
-import ModulesPage from "./pages/ModulesPage";
-import CheckoutPage from "./pages/CheckoutPage";
+import { HashRouter, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-// Optional: you can add a simple Home page
-function Home() {
-  return <h2 style={{ padding: 16 }}>Welcome to Your Store</h2>;
-}
+// Pages
+import Home from "./pages/Home";
+import ModulesPage from "./pages/ModulesPage";
+import VendorsPage from "./pages/VendorsPage";
+import ProductsPage from "./pages/ProductsPage";
+import ProductDetails from "./pages/ProductDetails";
+import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import CategoryProductsPage from "./pages/CategoryProductsPage";
 
 export default function App() {
   return (
-    <Router>
+    <HashRouter>
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-
-        {/* Vendor Products Page */}
-        <Route path="/vendor/:vendorId" element={<VendorProductsPage />} />
-
-        {/* Product Details Page */}
-        <Route path="/product/:id" element={<ProductDetails />} />
-
-        {/* Modules Page */}
         <Route path="/modules" element={<ModulesPage />} />
-        <Route path="/modules/:id" element={<ModulesPage />} /> {/* Optional detail view */}
-
-        {/* Checkout Page */}
-        <Route path="/checkout" element={<CheckoutPage />} />
-
-        {/* Redirect unknown routes to home */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/vendors/:moduleId" element={<VendorsPage />} />
+        <Route path="/products/:vendorId" element={<ProductsPage />} />
+        <Route path="/product/:id" element={<ProductDetails />} />
+        <Route path="/category/:categoryId" element={<CategoryProductsPage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <CheckoutPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
-    </Router>
+    </HashRouter>
   );
 }
