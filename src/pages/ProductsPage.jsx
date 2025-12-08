@@ -7,7 +7,7 @@ import {
 } from "../api/api";
 
 const ProductsPage = () => {
-  const { vendorId } = useParams(); // vendorId from route
+  const { vendorId } = useParams(); // vendor ID from route
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -21,7 +21,7 @@ const ProductsPage = () => {
     setLoading(true);
     setError("");
 
-    // Fetch products
+    // Fetch all products for this vendor
     getProductsByVendor(vendorId)
       .then((res) => {
         setProducts(res.data);
@@ -33,13 +33,13 @@ const ProductsPage = () => {
         setLoading(false);
       });
 
-    // Fetch categories for vendor
+    // Fetch categories for this vendor
     getCategoriesByVendor(vendorId)
       .then((res) => setCategories(res.data))
       .catch((err) => console.error(err));
   }, [vendorId]);
 
-  // Filter products by selected category
+  // Filter products by selected category (frontend filtering)
   const filteredProducts = selectedCategory
     ? products.filter((p) => p.categoryId._id === selectedCategory)
     : products;
@@ -51,7 +51,7 @@ const ProductsPage = () => {
     <div style={{ padding: "1rem" }}>
       <h1>Products</h1>
 
-      {/* Category Filter */}
+      {/* Category Filter Buttons */}
       <div style={{ marginBottom: "1rem" }}>
         <button
           onClick={() => setSelectedCategory("")}
