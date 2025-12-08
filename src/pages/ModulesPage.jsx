@@ -6,6 +6,7 @@ export default function ModulesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Page-local API helper
   const getModules = async () => {
     const res = await fetch("/api/modules");
     if (!res.ok) throw new Error("Failed to fetch modules");
