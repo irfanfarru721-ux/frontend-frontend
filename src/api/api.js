@@ -1,44 +1,55 @@
 // src/api/api.js
 const BASE_URL = "/api";
 
+// Helper to safely parse JSON
+const safeJson = async (res) => {
+  const contentType = res.headers.get("content-type");
+  if (!res.ok) {
+    let text = "";
+    try { text = await res.text(); } catch {}
+    throw new Error(`HTTP ${res.status}: ${text}`);
+  }
+  if (contentType && contentType.includes("application/json")) {
+    return res.json();
+  } else {
+    const text = await res.text();
+    console.error("Expected JSON but got:", text);
+    throw new Error("Invalid JSON response from server");
+  }
+};
+
 /* ===========================
    PRODUCTS
 =========================== */
 
 export const getAllProducts = async () => {
   const res = await fetch(`${BASE_URL}/products`);
-  if (!res.ok) throw new Error("Failed to fetch products");
-  return res.json();
+  return safeJson(res);
 };
 
 export const getProduct = async (id) => {
   const res = await fetch(`${BASE_URL}/products/${id}`);
-  if (!res.ok) throw new Error("Failed to fetch product");
-  return res.json();
+  return safeJson(res);
 };
 
 export const getProductsByCategory = async (categoryId) => {
   const res = await fetch(`${BASE_URL}/products/category/${categoryId}`);
-  if (!res.ok) throw new Error("Failed to fetch products by category");
-  return res.json();
+  return safeJson(res);
 };
 
 export const getProductsByVendor = async (vendorId) => {
   const res = await fetch(`${BASE_URL}/products/vendor/${vendorId}`);
-  if (!res.ok) throw new Error("Failed to fetch products by vendor");
-  return res.json();
+  return safeJson(res);
 };
 
 export const getProductsByVendorAndCategory = async (vendorId, categoryId) => {
   const res = await fetch(`${BASE_URL}/products/vendor/${vendorId}/category/${categoryId}`);
-  if (!res.ok) throw new Error("Failed to fetch products by vendor and category");
-  return res.json();
+  return safeJson(res);
 };
 
 export const getVendorProductsGrouped = async (vendorId) => {
   const res = await fetch(`${BASE_URL}/products/vendor-grouped/${vendorId}`);
-  if (!res.ok) throw new Error("Failed to fetch vendor products grouped");
-  return res.json();
+  return safeJson(res);
 };
 
 /* ===========================
@@ -47,8 +58,7 @@ export const getVendorProductsGrouped = async (vendorId) => {
 
 export const getModules = async () => {
   const res = await fetch(`${BASE_URL}/modules`);
-  if (!res.ok) throw new Error("Failed to fetch modules");
-  return res.json();
+  return safeJson(res);
 };
 
 /* ===========================
@@ -61,8 +71,7 @@ export const loginUser = async (email, password) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
-  if (!res.ok) throw new Error("Login failed");
-  return res.json();
+  return safeJson(res);
 };
 
 export const registerUser = async (userData) => {
@@ -71,8 +80,7 @@ export const registerUser = async (userData) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(userData),
   });
-  if (!res.ok) throw new Error("Registration failed");
-  return res.json();
+  return safeJson(res);
 };
 
 /* ===========================
@@ -85,6 +93,5 @@ export const createOrder = async (orderData) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(orderData),
   });
-  if (!res.ok) throw new Error("Failed to create order");
-  return res.json();
+  return safeJson(res);
 };
