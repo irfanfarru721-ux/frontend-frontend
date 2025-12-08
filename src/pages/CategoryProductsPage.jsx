@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "../api";
+import axios from "../api/api";
 
 export default function CategoryProducts() {
   const { categoryId } = useParams();
