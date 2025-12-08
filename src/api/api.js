@@ -1,97 +1,83 @@
 // src/api/api.js
-const BASE_URL = "/api";
+import axios from "axios";
 
-// Helper to safely parse JSON
-const safeJson = async (res) => {
-  const contentType = res.headers.get("content-type");
-  if (!res.ok) {
-    let text = "";
-    try { text = await res.text(); } catch {}
-    throw new Error(`HTTP ${res.status}: ${text}`);
-  }
-  if (contentType && contentType.includes("application/json")) {
-    return res.json();
-  } else {
-    const text = await res.text();
-    console.error("Expected JSON but got:", text);
-    throw new Error("Invalid JSON response from server");
-  }
-};
+// Base URL for backend
+export const API_BASE = "https://completed-backend.onrender.com/api";
 
-/* ===========================
-   PRODUCTS
-=========================== */
+// Create axios instance
+const axiosInstance = axios.create({
+  baseURL: API_BASE,
+  headers: { "Content-Type": "application/json" },
+});
 
-export const getAllProducts = async () => {
-  const res = await fetch(`${BASE_URL}/products`);
-  return safeJson(res);
-};
+// Automatically attach token if available
+axiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
-export const getProduct = async (id) => {
-  const res = await fetch(`${BASE_URL}/products/${id}`);
-  return safeJson(res);
-};
+// ================== AUTH ==================
+export const registerUser = (data) => axiosInstance.post("/users/register", data);
+export const loginUser = (data) => axiosInstance.post("/users/login", data);
 
-export const getProductsByCategory = async (categoryId) => {
-  const res = await fetch(`${BASE_URL}/products/category/${categoryId}`);
-  return safeJson(res);
-};
+// ================== MODULES ==================
+export const getModules = () => axiosInstance.get("/modules");
 
-export const getProductsByVendor = async (vendorId) => {
-  const res = await fetch(`${BASE_URL}/products/vendor/${vendorId}`);
-  return safeJson(res);
-};
+// ================== VENDORS ==================
+export const getVendors = () => axiosInstance.get("/vendors");
+export const getVendor = (id) => axiosInstance.get(`/vendors/${id}`);
+export const createVendor = (data) => axiosInstance.post("/vendors", data);
+export const updateVendor = (id, data) => axiosInstance.put(`/vendors/${id}`, data);
+export const deleteVendor = (id) => axiosInstance.delete(`/vendors/${id}`);
 
-export const getProductsByVendorAndCategory = async (vendorId, categoryId) => {
-  const res = await fetch(`${BASE_URL}/products/vendor/${vendorId}/category/${categoryId}`);
-  return safeJson(res);
-};
+// ================== PRODUCTS ==================
+export const getProducts = () => axiosInstance.get("/products");
+export const getProduct = (id) => axiosInstance.get(`/products/${id}`);
+export const createProduct = (data) => axiosInstance.post("/products", data);
+export const updateProduct = (id, data) => axiosInstance.put(`/products/${id}`, data);
+export const deleteProduct = (id) => axiosInstance.delete(`/products/${id}`);
+export const filterProducts = (params) => axiosInstance.get("/products", { params });
 
-export const getVendorProductsGrouped = async (vendorId) => {
-  const res = await fetch(`${BASE_URL}/products/vendor-grouped/${vendorId}`);
-  return safeJson(res);
-};
+// **Category / Vendor specific**
+export const getProductsByCategory = (catId) =>
+  axiosInstance.get(`/products/category/${catId}`);
+export const getProductsByVendor = (vendorId) =>
+  axiosInstance.get(`/products/vendor/${vendorId}`);
 
-/* ===========================
-   MODULES
-=========================== */
+// ================== CATEGORIES ==================
+export const getCategories = () => axiosInstance.get("/categories");
+export const getCategory = (id) => axiosInstance.get(`/categories/${id}`);
+export const createCategory = (data) => axiosInstance.post("/categories", data);
+export const updateCategory = (id, data) => axiosInstance.put(`/categories/${id}`, data);
+export const deleteCategory = (id) => axiosInstance.delete(`/categories/${id}`);
+export const getCategoriesByVendor = (vendorId) =>
+  axiosInstance.get(`/categories/vendor/${vendorId}`);
 
-export const getModules = async () => {
-  const res = await fetch(`${BASE_URL}/modules`);
-  return safeJson(res);
-};
+// ================== ORDERS ==================
+export const createOrder = (data) => axiosInstance.post("/orders", data);
+export const getOrders = () => axiosInstance.get("/orders");
+export const getOrder = (id) => axiosInstance.get(`/orders/${id}`);
+export const updateOrder = (id, data) => axiosInstance.put(`/orders/${id}`, data);
+export const deleteOrder = (id) => axiosInstance.delete(`/orders/${id}`);
 
-/* ===========================
-   USERS
-=========================== */
+// ================== CART ==================
+export const getCart = () => axiosInstance.get("/cart");
+export const addToCart = (data) => axiosInstance.post("/cart", data);
+export const updateCartItem = (id, data) => axiosInstance.put(`/cart/${id}`, data);
+export const removeCartItem = (id) => axiosInstance.delete(`/cart/${id}`);
+export const clearCart = () => axiosInstance.delete("/cart/clear");
 
-export const loginUser = async (email, password) => {
-  const res = await fetch(`${BASE_URL}/users/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
-  return safeJson(res);
-};
+// ================== REVIEWS ==================
+export const getReviews = (productId) => axiosInstance.get(`/reviews/${productId}`);
+export const addReview = (productId, data) => axiosInstance.post(`/reviews/${productId}`, data);
+export const deleteReview = (reviewId) => axiosInstance.delete(`/reviews/${reviewId}`);
 
-export const registerUser = async (userData) => {
-  const res = await fetch(`${BASE_URL}/users/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(userData),
-  });
-  return safeJson(res);
-};
+// ================== SERVICES (OPTIONAL) ==================
+export const getServices = () => axiosInstance.get("/services");
+export const getService = (id) => axiosInstance.get(`/services/${id}`);
+export const createService = (data) => axiosInstance.post("/services", data);
+export const updateService = (id, data) => axiosInstance.put(`/services/${id}`, data);
+export const deleteService = (id) => axiosInstance.delete(`/services/${id}`);
 
-/* ===========================
-   ORDERS
-=========================== */
-
-export const createOrder = async (orderData) => {
-  const res = await fetch(`${BASE_URL}/orders`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(orderData),
-  });
-  return safeJson(res);
-};
+export default axiosInstance;
