@@ -1,26 +1,44 @@
 import React, { useEffect, useState } from "react";
-import { getVendorsByModule } from "../api/api";
 import { useParams, Link } from "react-router-dom";
+import { getVendorsByModule } from "../api/api";
 
 export default function VendorsPage() {
   const { moduleId } = useParams();
   const [vendors, setVendors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     if (!moduleId) return;
-    getVendorsByModule(moduleId).then((r)=>setVendors(r.data || []));
+
+    setLoading(true);
+    getVendorsByModule(moduleId)
+      .then((data) => {
+        setVendors(data || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError(err.message);
+        setLoading(false);
+      });
   }, [moduleId]);
 
+  if (loading) return <p>Loading vendors...</p>;
+  if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
+  if (vendors.length === 0) return <p>No vendors found for this module.</p>;
+
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Vendors</h2>
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(220px,1fr))',gap:12}}>
-        {vendors.map(v => (
-          <Link key={v._id} to={`/products/${v._id}`} style={{ border:'1px solid #ddd', padding:12, borderRadius:8, textDecoration:'none', color:'#111' }}>
-            <div style={{fontWeight:700}}>{v.name}</div>
-            <div style={{fontSize:12, color:'#666'}}>Shop</div>
-          </Link>
+    <div style={{ padding: 16 }}>
+      <h2>Vendors for Module {moduleId}</h2>
+      <ul>
+        {vendors.map((vendor) => (
+          <li key={vendor._id} style={{ marginBottom: 12 }}>
+            <Link to={`/vendor/${vendor._id}`}>{vendor.name}</Link>
+            <p>{vendor.description}</p>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 }
