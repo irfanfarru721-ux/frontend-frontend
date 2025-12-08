@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
+import { getProduct } from "../api/api";
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -8,13 +9,6 @@ export default function ProductDetails() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Page-local API helper
-  const getProduct = async (id) => {
-    const res = await fetch(`/api/products/${id}`);
-    if (!res.ok) throw new Error("Failed to fetch product");
-    return res.json();
-  };
 
   useEffect(() => {
     if (!id) return;
