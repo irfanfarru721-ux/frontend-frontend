@@ -1,17 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { getModules } from "../api/api";
 
 export default function ModulesPage() {
   const [modules, setModules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Page-local API helper
-  const getModules = async () => {
-    const res = await fetch("/api/modules");
-    if (!res.ok) throw new Error("Failed to fetch modules");
-    return res.json();
-  };
 
   useEffect(() => {
     getModules()
