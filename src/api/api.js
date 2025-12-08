@@ -1,4 +1,3 @@
-// src/api/api.js
 import axios from "axios";
 
 // Base URL for backend
@@ -31,6 +30,10 @@ export const createVendor = (data) => axiosInstance.post("/vendors", data);
 export const updateVendor = (id, data) => axiosInstance.put(`/vendors/${id}`, data);
 export const deleteVendor = (id) => axiosInstance.delete(`/vendors/${id}`);
 
+// ⭐ ADD THIS — Vendors by Module
+export const getVendorsByModule = (moduleId) =>
+  axiosInstance.get(`/vendors/module/${moduleId}`);
+
 // ================== PRODUCTS ==================
 export const getProducts = () => axiosInstance.get("/products");
 export const getProduct = (id) => axiosInstance.get(`/products/${id}`);
@@ -39,9 +42,9 @@ export const updateProduct = (id, data) => axiosInstance.put(`/products/${id}`, 
 export const deleteProduct = (id) => axiosInstance.delete(`/products/${id}`);
 export const filterProducts = (params) => axiosInstance.get("/products", { params });
 
-// **Category / Vendor specific**
 export const getProductsByCategory = (catId) =>
   axiosInstance.get(`/products/category/${catId}`);
+
 export const getProductsByVendor = (vendorId) =>
   axiosInstance.get(`/products/vendor/${vendorId}`);
 
@@ -51,6 +54,7 @@ export const getCategory = (id) => axiosInstance.get(`/categories/${id}`);
 export const createCategory = (data) => axiosInstance.post("/categories", data);
 export const updateCategory = (id, data) => axiosInstance.put(`/categories/${id}`, data);
 export const deleteCategory = (id) => axiosInstance.delete(`/categories/${id}`);
+
 export const getCategoriesByVendor = (vendorId) =>
   axiosInstance.get(`/categories/vendor/${vendorId}`);
 
@@ -70,7 +74,8 @@ export const clearCart = () => axiosInstance.delete("/cart/clear");
 
 // ================== REVIEWS ==================
 export const getReviews = (productId) => axiosInstance.get(`/reviews/${productId}`);
-export const addReview = (productId, data) => axiosInstance.post(`/reviews/${productId}`, data);
+export const addReview = (productId, data) =>
+  axiosInstance.post(`/reviews/${productId}`, data);
 export const deleteReview = (reviewId) => axiosInstance.delete(`/reviews/${reviewId}`);
 
 // ================== SERVICES (OPTIONAL) ==================
