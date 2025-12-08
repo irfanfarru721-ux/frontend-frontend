@@ -8,6 +8,7 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Page-local API helper
   const createOrder = async (orderData) => {
     const res = await fetch("/api/orders", {
       method: "POST",
@@ -36,9 +37,10 @@ export default function CheckoutPage() {
     <div style={{ padding: 16 }}>
       <h2>Checkout</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
-      <button onClick={handleCheckout} disabled={loading}>
+      <button onClick={handleCheckout} disabled={loading || cartItems.length === 0}>
         {loading ? "Processing..." : "Place Order"}
       </button>
+      {cartItems.length === 0 && <p>Your cart is empty.</p>}
     </div>
   );
 }
