@@ -4,25 +4,34 @@ import { useParams } from "react-router-dom";
 import {
   getProductsByVendor,
   getCategoriesByVendor,
+  getProductsByVendorAndCategory,
 } from "../api/api";
 
 const ProductsPage = () => {
-  const { vendorId } = useParams(); // vendor ID from route
+  const { vendorId } = useParams();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Fetch vendor products and categories
   useEffect(() => {
     if (!vendorId) return;
 
     setLoading(true);
     setError("");
 
-    // Fetch all products for this vendor
-    getProductsByVendor(vendorId)
+    // Fetch categories for this vendor
+    getCategoriesByVendor(vendorId)
+      .then((res) => setCategories(res.data))
+      .catch((err) => console.error(err));
+
+    // Fetch products (all or by category)
+    const fetchProducts = selectedCategory
+      ? getProductsByVendorAndCategory(vendorId, selectedCategory)
+      : getProductsByVendor(vendorId);
+
+    fetchProducts
       .then((res) => {
         setProducts(res.data);
         setLoading(false);
@@ -32,17 +41,7 @@ const ProductsPage = () => {
         setError("Failed to load products.");
         setLoading(false);
       });
-
-    // Fetch categories for this vendor
-    getCategoriesByVendor(vendorId)
-      .then((res) => setCategories(res.data))
-      .catch((err) => console.error(err));
-  }, [vendorId]);
-
-  // Filter products by selected category (frontend filtering)
-  const filteredProducts = selectedCategory
-    ? products.filter((p) => p.categoryId._id === selectedCategory)
-    : products;
+  }, [vendorId, selectedCategory]);
 
   if (loading) return <p>Loading products...</p>;
   if (error) return <p>{error}</p>;
@@ -87,8 +86,8 @@ const ProductsPage = () => {
       </div>
 
       {/* Products Grid */}
-      {filteredProducts.length === 0 ? (
-        <p>No products in this category.</p>
+      {products.length === 0 ? (
+        <p>No products found.</p>
       ) : (
         <div
           style={{
@@ -97,7 +96,7 @@ const ProductsPage = () => {
             gap: "1rem",
           }}
         >
-          {filteredProducts.map((p) => (
+          {products.map((p) => (
             <div
               key={p._id}
               style={{
