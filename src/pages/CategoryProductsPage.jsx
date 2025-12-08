@@ -10,13 +10,16 @@ export default function CategoryProductsPage() {
     if (!categoryId) return;
 
     getProductsByCategory(categoryId)
-      .then((res) => setProducts(res.data))
+      .then((res) => {
+        console.log("Category Products:", res.data); // debug
+        setProducts(res.data);
+      })
       .catch((err) => console.error(err));
   }, [categoryId]);
 
   return (
     <div style={{ padding: 20 }}>
-      <h2>Products</h2>
+      <h2>Category Products</h2>
       {products.length === 0 ? (
         <p>No products found.</p>
       ) : (
@@ -37,7 +40,9 @@ export default function CategoryProductsPage() {
               }}
             >
               <div style={{ fontWeight: 700 }}>{p.name}</div>
-              <div>₹ {p.price}</div>
+              <div>Category: {p.categoryId.name}</div>
+              <div>Vendor: {p.vendorId.name}</div>
+              <div>Price: ₹ {p.price}</div>
             </div>
           ))}
         </div>
