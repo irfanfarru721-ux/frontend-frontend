@@ -1,35 +1,44 @@
-import React, { useContext, useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
-import { createOrder } from "../api/api";
 
-export default function CheckoutPage(){
-  const { cart, clearCart } = useContext(CartContext);
-  const [address, setAddress] = useState("");
-  const [phone, setPhone] = useState("");
+export default function CheckoutPage() {
+  const { cartItems, clearCart } = useContext(CartContext);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handlePlaceOrder = async () => {
-    if (!address) return alert("Enter address");
-    const items = cart.map(i => ({ productId: i.productId, qty: i.qty }));
+  const createOrder = async (orderData) => {
+    const res = await fetch("/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(orderData),
+    });
+    if (!res.ok) throw new Error("Failed to create order");
+    return res.json();
+  };
+
+  const handleCheckout = async () => {
+    setLoading(true);
     try {
-      await createOrder({ items, shippingAddress: address, phone });
+      const order = await createOrder({ items: cartItems });
       clearCart();
-      alert("Order placed");
-      navigate("/");
+      navigate(`/order/${order._id}`);
     } catch (err) {
-      alert("Order failed");
+      console.error(err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div style={{padding:20}}>
+    <div style={{ padding: 16 }}>
       <h2>Checkout</h2>
-      <div>
-        <input placeholder="Shipping address" value={address} onChange={e=>setAddress(e.target.value)} style={{display:'block', width:'100%', padding:8, marginBottom:8}}/>
-        <input placeholder="Phone" value={phone} onChange={e=>setPhone(e.target.value)} style={{display:'block', width:'100%', padding:8, marginBottom:8}}/>
-        <button onClick={handlePlaceOrder} style={{padding:'8px 12px', background:'#0369a1', color:'#fff'}}>Place Order</button>
-      </div>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <button onClick={handleCheckout} disabled={loading}>
+        {loading ? "Processing..." : "Place Order"}
+      </button>
     </div>
   );
 }
