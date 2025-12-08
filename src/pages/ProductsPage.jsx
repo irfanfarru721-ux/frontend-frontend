@@ -14,11 +14,14 @@ const ProductsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Fetch vendor products
+  // Fetch vendor products and categories
   useEffect(() => {
     if (!vendorId) return;
 
     setLoading(true);
+    setError("");
+
+    // Fetch products
     getProductsByVendor(vendorId)
       .then((res) => {
         setProducts(res.data);
@@ -30,7 +33,7 @@ const ProductsPage = () => {
         setLoading(false);
       });
 
-    // Fetch categories for this vendor
+    // Fetch categories for vendor
     getCategoriesByVendor(vendorId)
       .then((res) => setCategories(res.data))
       .catch((err) => console.error(err));
@@ -48,7 +51,7 @@ const ProductsPage = () => {
     <div style={{ padding: "1rem" }}>
       <h1>Products</h1>
 
-      {/* Categories Filter */}
+      {/* Category Filter */}
       <div style={{ marginBottom: "1rem" }}>
         <button
           onClick={() => setSelectedCategory("")}
@@ -59,6 +62,7 @@ const ProductsPage = () => {
             color: "#fff",
             border: "none",
             borderRadius: "5px",
+            cursor: "pointer",
           }}
         >
           All
@@ -74,6 +78,7 @@ const ProductsPage = () => {
               color: "#fff",
               border: "none",
               borderRadius: "5px",
+              cursor: "pointer",
             }}
           >
             {cat.name}
