@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -17,28 +17,15 @@ import CategoryProductsPage from "./pages/CategoryProductsPage";
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Navbar />
       <Routes>
-        {/* Home */}
         <Route path="/" element={<Home />} />
-
-        {/* Modules */}
         <Route path="/modules" element={<ModulesPage />} />
-
-        {/* Vendors by Module */}
         <Route path="/vendors/:moduleId" element={<VendorsPage />} />
-
-        {/* Products by Vendor */}
         <Route path="/products/:vendorId" element={<ProductsPage />} />
-
-        {/* Product Details */}
         <Route path="/product/:id" element={<ProductDetails />} />
-
-        {/* Category-wise Products */}
         <Route path="/category/:categoryId" element={<CategoryProductsPage />} />
-
-        {/* Cart & Checkout */}
         <Route path="/cart" element={<CartPage />} />
         <Route
           path="/checkout"
@@ -48,11 +35,9 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
-        {/* Auth */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
