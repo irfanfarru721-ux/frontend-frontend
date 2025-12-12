@@ -5,7 +5,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 // Pages
 import Home from "./pages/Home";
-import ModulesPage from "./pages/ModulesPage";
 import VendorsPage from "./pages/VendorsPage";
 import ProductsPage from "./pages/ProductsPage";
 import ProductDetails from "./pages/ProductDetails";
@@ -21,7 +20,6 @@ export default function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/modules" element={<ModulesPage />} />
         <Route path="/vendors/:moduleId" element={<VendorsPage />} />
         <Route path="/products/:vendorId" element={<ProductsPage />} />
         <Route path="/product/:id" element={<ProductDetails />} />
