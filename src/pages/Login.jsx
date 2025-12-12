@@ -1,43 +1,59 @@
-import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API from "../api";
 
-function Login() {
-  const { login } = useAuth();
-  const navigate = useNavigate();
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const submit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await login(email, password);
-    if (res.success) navigate("/");
-    else alert(res.error);
+    if (!email || !password) {
+      alert("Please fill both email and password");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await API.post("/auth/login", { email, password });
+      alert(res.data.message || "Login successful");
+
+      // Save token to localStorage
+      localStorage.setItem("token", res.data.token);
+
+      // Redirect to home page
+      navigate("/");
+    } catch (err) {
+      alert(err.response?.data?.error || "Login failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div style={{ padding: 20, maxWidth: 480 }}>
-      <h2>Login</h2>
-      <form onSubmit={submit}>
+    <div className="container">
+      <h1>Login</h1>
+      <form onSubmit={handleSubmit} className="form">
         <input
+          type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          style={{ display: "block", width: "100%", padding: 8, marginBottom: 8 }}
         />
+
         <input
-          placeholder="Password"
           type="password"
+          placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          style={{ display: "block", width: "100%", padding: 8, marginBottom: 8 }}
         />
-        <button type="submit" style={{ padding: "8px 12px", background: "#0369a1", color: "#fff" }}>
-          Login
+
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
         </button>
       </form>
     </div>
   );
 }
-
-export default Login; // ✅ Important!
