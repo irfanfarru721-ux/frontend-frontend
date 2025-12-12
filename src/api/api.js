@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Base URL for backend
-export const API_BASE = "https://completed-backend.onrender.com/api";
+export const API_BASE = "https://farrubackend.onrender.com/api";
 
 // Create axios instance
 const axiosInstance = axios.create({
